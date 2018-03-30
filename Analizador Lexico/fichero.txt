@@ -1,0 +1,1 @@
+<?php $hola = 12;                  const HOLA = 12;                ?>
