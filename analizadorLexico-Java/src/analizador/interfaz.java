@@ -12,17 +12,23 @@
 package analizador;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -167,7 +173,7 @@ public class interfaz extends javax.swing.JFrame {
         catch (IOException ex){
             System.out.println(ex.getMessage());
         }
-        tablaResultado();
+        
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
     public String filePath;
@@ -201,14 +207,41 @@ public class interfaz extends javax.swing.JFrame {
     /**
     * @param args the command line arguments
     */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws IOException {
+        File output = new File(DEFAULT_OUTPUT_FILE);
+        File directorio = new File("C:\\MINIPHP");
+        directorio.mkdir();
+        output.createNewFile();
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new interfaz().setVisible(true);
             }
         });
     }
+    
+    private ArrayList listaErrores;
+    private static final String DEFAULT_OUTPUT_FILE = "Output.out";
+    
+    public void IniciarProcesoDeSalida(){
+        Writer writer = null;
+    	String output ="";
+    	for (int i = 0; i < listaErrores.size(); i++) {
+			output = output + listaErrores.get(i).toString()+System.lineSeparator();
+		}
+    	try {
+            writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream("C:\\MINIPHP\\"+DEFAULT_OUTPUT_FILE), "utf-8"));
+            writer.write(output);
+        } catch (IOException ex) {
+            // report
+        } finally {
+            try {writer.close();} catch (IOException ex) {/*ignore*/}
+        }
+        JOptionPane.showMessageDialog(null, "Archivo de salida generado, dirigase a:    "+System.getProperty("line.separator")+"         C:\\MINIPHP\\"+DEFAULT_OUTPUT_FILE+System.getProperty("line.separator")+"     para ver sus resultados!");
+    }
+    
     public void probarLexerFile() throws IOException{
+        listaErrores = new ArrayList();
         tokenslist = new LinkedList<TokenEvaluado>();
         Reader reader = new BufferedReader(new FileReader(filePath));
         Lexer lexer = new Lexer (reader);
@@ -222,12 +255,23 @@ public class interfaz extends javax.swing.JFrame {
                     System.out.println(tokenslist.get(i).nombre + "=" + tokenslist.get(i).tipo);
                 }
                 resultado = resultado +"<<<<<<<<<<<<<ERRORES>>>>>>>>>>>>>>>"+System.getProperty("line.separator")+"TOTAL: "+errores+System.getProperty("line.separator");
+                listaErrores.add("<<<<<<<<<<<<<ERRORES>>>>>>>>>>>>>>>");
+                listaErrores.add("TOTAL: "+errores);
                 if (errores==0) {
                     resultado = resultado+"SI ES VALIDO EN PHP!";
+                    listaErrores.add("SI ES VALIDO EN PHP!");
+                    String ejemplo = "HOLA MUNDO";
+                    if (ejemplo.contains("HOLA")) {
+                       String nuevac = ejemplo.replaceAll("HOLA", "hola");
+                       System.out.println(nuevac);
+                    }
                 }else{
                     resultado = resultado+"NO ES VALIDO EN PHP!";
+                    listaErrores.add("NO ES VALIDO EN PHP!");
                 }
                 textArea1.setText(resultado);
+                tablaResultado();
+                IniciarProcesoDeSalida();
                 return;
             }
             switch (token){
@@ -348,6 +392,7 @@ public class interfaz extends javax.swing.JFrame {
                     break;
                 case ERROR:
                     errores++;
+                    listaErrores.add("Error, símbolo "+lexer.lexeme+" no reconocido. "+"Línea: "+lexer.linea);
                     resultado=resultado+ "Error, símbolo "+lexer.lexeme+" no reconocido. "+"Línea: "+lexer.linea+System.getProperty("line.separator");
                     tokenitem.nombre=lexer.lexeme;
                     tokenitem.tipo="NO RECONOCIDO";
