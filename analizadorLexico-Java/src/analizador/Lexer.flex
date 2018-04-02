@@ -5,7 +5,9 @@ import static analizador.Token.*;
 %line
 %ignorecase
 %type Token
-PalabraReservada = "abstract"|"as"|"break"|"case"|"catch"|"class"|"clone"|"const"|"continue"|"declare"|"default"|"die"|"do"|"echo"|"enddeclare"|"eval"|"exit"|"extends"|"final"|"finally"|"function"|"implements"|"include"|"global"|"goto"|"include_once"|"instanceof"|"insteadof"|"interface"|"isset"|"new"|"print"|"list"|"namespace"|"private"|"protected"|"public"|"require"|"require_once"|"return"|"static"|"throw"|"trait"|"try"|"unset"|"use"|"var"|"while"|"yield" 
+PalabraReservada = "abstract"|"as"|"case"|"catch"|"class"|"clone"|"const"|"continue"|"declare"|"default"|"die"|"do"|"echo"|"enddeclare"|"eval"|"exit"|"extends"|"final"|"finally"|"implements"|"include"|"global"|"goto"|"include_once"|"instanceof"|"insteadof"|"interface"|"isset"|"new"|"print"|"list"|"namespace"|"private"|"protected"|"public"|"require"|"require_once"|"return"|"static"|"throw"|"trait"|"try"|"unset"|"use"|"var"|"while"|"yield"
+variablesPredefinidas = "$GLOBALS"|"$_SERVER"|"$_GET"|"$_POST"|"$_FILES"|"$_REQUEST"|"$_SESSION"|"$_ENV"|"$_COOKIE"|"$php_errormsg"|"$HTTP_RAW_POST_DATA"|"$http_response_header"|"$argc"|"$argv"
+accesoBD = "$recordset" "[" "'" ({Espacio}* {L}* {D}*)* {Espacio}*  "'" "]"
 operadoresA = "+"|"-"|"*"|"/"|"**"|"%"|"++"|"--"
 operadoresL = "and"|"or"|"xor"|"!"|"&&"|"||"|"not"
 cadena = "String"|"string"
@@ -37,9 +39,22 @@ public int linea;
 
 {comentario} {lexeme=yytext(); return COMMENT;}
 {comentarioMult} {lexeme=yytext(); return COMMENTM;}
+{variablesPredefinidas} {lexeme=yytext(); return VARPRE;}
+{accesoBD} {lexeme=yytext(); return ACCDB;}
 "if" {lexeme=yytext(); return SI;}
 "(" {lexeme=yytext(); return PAA;}
 ")" {lexeme=yytext(); return PAC;}
+"else" {{lexeme=yytext(); return ELS;}}
+"break" {{lexeme=yytext(); return BREA;}}
+"while" {{lexeme=yytext(); return MIENTR;}}
+"do" {{lexeme=yytext(); return HMIENTR;}}
+"for" {{lexeme=yytext(); return PARA;}}
+"foreach" {{lexeme=yytext(); return PARAC;}}
+"switch" {{lexeme=yytext(); return SELEC;}}
+"include" {{lexeme=yytext(); return INCLUI;}}
+"continue" {{lexeme=yytext(); return CONTIN;}}
+"return" {{lexeme=yytext(); return RET;}}
+"function" {{lexeme=yytext(); return FUN;}}
 {texto} {lexeme=yytext(); return TEXTO;}
 {WHITE} {/*Ignore*/}
 {PalabraReservada} {lexeme=yytext(); return PALABRARESERVADA;}

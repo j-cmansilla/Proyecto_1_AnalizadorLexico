@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -30,7 +31,7 @@ import java.util.logging.Logger;
 public class interfaz extends javax.swing.JFrame {
 
     /** Creates new form interfaz */
-    List<identificador> tokenslist;
+    List<TokenEvaluado> tokenslist;
     public interfaz() {
         initComponents();
     }
@@ -44,16 +45,33 @@ public class interfaz extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        menuBar1 = new java.awt.MenuBar();
+        menu1 = new java.awt.Menu();
+        menu2 = new java.awt.Menu();
+        jMenu1 = new javax.swing.JMenu();
         jButton1 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
         textArea1 = new java.awt.TextArea();
+        menuArchivo = new javax.swing.JMenuBar();
+        menuSubir = new javax.swing.JMenu();
+        jMenu4 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
+
+        menu1.setLabel("File");
+        menuBar1.add(menu1);
+
+        menu2.setLabel("Edit");
+        menuBar1.add(menu2);
+
+        jMenu1.setText("jMenu1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton1.setText("Analizar");
+        jButton1.setEnabled(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -78,6 +96,29 @@ public class interfaz extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel3.setText("Analizador Léxico");
+
+        menuSubir.setText("Subir Archivo");
+        menuSubir.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                menuSubirMousePressed(evt);
+            }
+        });
+
+        jMenu4.setText("Subir Archivo");
+        jMenu4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu4MouseClicked(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jMenu4MousePressed(evt);
+            }
+        });
+        menuSubir.add(jMenu4);
+
+        menuArchivo.add(menuSubir);
+        menuArchivo.add(jMenu3);
+
+        setJMenuBar(menuArchivo);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -129,6 +170,33 @@ public class interfaz extends javax.swing.JFrame {
         tablaResultado();
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
+    public String filePath;
+    private void jMenu4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu4MouseClicked
+        // TODO add your handling code here:
+       
+    }//GEN-LAST:event_jMenu4MouseClicked
+
+    private void menuSubirMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuSubirMousePressed
+        // TODO add your handling code here:
+        /*JFileChooser chooser = new JFileChooser();
+        chooser.showOpenDialog(null);
+        File f = chooser.getSelectedFile();
+        if (f != null) {     
+            filePath = f.getAbsolutePath();
+            jButton1.setEnabled(true);
+        }*/
+    }//GEN-LAST:event_menuSubirMousePressed
+
+    private void jMenu4MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu4MousePressed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        chooser.showOpenDialog(null);
+        File f = chooser.getSelectedFile();
+        if (f != null) {     
+            filePath = f.getAbsolutePath();
+            jButton1.setEnabled(true);
+        }
+    }//GEN-LAST:event_jMenu4MousePressed
 
     /**
     * @param args the command line arguments
@@ -141,14 +209,14 @@ public class interfaz extends javax.swing.JFrame {
         });
     }
     public void probarLexerFile() throws IOException{
-        tokenslist = new LinkedList<identificador>();
-        Reader reader = new BufferedReader(new FileReader("C:/Users/Jose Mansilla/Desktop/test.txt"));
+        tokenslist = new LinkedList<TokenEvaluado>();
+        Reader reader = new BufferedReader(new FileReader(filePath));
         Lexer lexer = new Lexer (reader);
         String resultado="";
         int errores = 0;
         while (true){
             Token token =lexer.yylex();
-            identificador tokenitem=new identificador();
+            TokenEvaluado tokenitem=new TokenEvaluado();
             if (token == null){
                 for(int i=0;i<tokenslist.size();i++){
                     System.out.println(tokenslist.get(i).nombre + "=" + tokenslist.get(i).tipo);
@@ -163,9 +231,74 @@ public class interfaz extends javax.swing.JFrame {
                 return;
             }
             switch (token){
+                case FUN:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Función definida por el usuario";
+                    tokenslist.add(tokenitem);
+                break;
+                case ACCDB:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Acceso a la base de datos";
+                    tokenslist.add(tokenitem);
+                break;
+                case VARPRE:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Variable predefinida";
+                    tokenslist.add(tokenitem);
+                break;
+                case SELEC:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Sentencia de control switch";
+                    tokenslist.add(tokenitem);
+                break;
+                case INCLUI:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Sentencia de control include";
+                    tokenslist.add(tokenitem);
+                break;
+                case CONTIN:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Sentencia de control continue";
+                    tokenslist.add(tokenitem);
+                break;
+                case RET:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Sentencia de control return";
+                    tokenslist.add(tokenitem);
+                break;
+                case BREA:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Sentencia de control break";
+                    tokenslist.add(tokenitem);
+                break;
                 case COMMENT:
                     tokenitem.nombre=lexer.lexeme;
                     tokenitem.tipo="Comentario de 1 linea";
+                    tokenslist.add(tokenitem);
+                    break;
+                case ELS:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Sentencia de control else";
+                    tokenslist.add(tokenitem);
+                    break;
+                case MIENTR:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Sentencia de control while";
+                    tokenslist.add(tokenitem);
+                    break;
+                case HMIENTR:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Sentencia de control do-while";
+                    tokenslist.add(tokenitem);
+                    break;
+                case PARA:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Sentencia de control for";
+                    tokenslist.add(tokenitem);
+                    break;
+                case PARAC:
+                    tokenitem.nombre=lexer.lexeme;
+                    tokenitem.tipo="Sentencia de control foreach";
                     tokenslist.add(tokenitem);
                     break;
                 case COMILLA:
@@ -185,7 +318,7 @@ public class interfaz extends javax.swing.JFrame {
                     break;
                 case OPERADORARITMETICO:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Operador Aritmetico";
+                    tokenitem.tipo="Operador Aritmético";
                     tokenslist.add(tokenitem);
                     break;
                 case SI:
@@ -200,34 +333,34 @@ public class interfaz extends javax.swing.JFrame {
                     break;
                 case ENT:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Entero";
+                    tokenitem.tipo="Tipo de dato entero";
                     tokenslist.add(tokenitem);
                     break;
                 case REA:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Real";
+                    tokenitem.tipo="Tipo de dato real";
                     tokenslist.add(tokenitem);
                     break;
                 case TIPODEDATOL:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Tipo de dato logico";
+                    tokenitem.tipo="Tipo de dato lógico";
                     tokenslist.add(tokenitem);
                     break;
                 case ERROR:
                     errores++;
-                    resultado=resultado+ "Error, simbolo "+lexer.lexeme+" no reconocido. "+"Linea: "+lexer.linea+System.getProperty("line.separator");
+                    resultado=resultado+ "Error, símbolo "+lexer.lexeme+" no reconocido. "+"Línea: "+lexer.linea+System.getProperty("line.separator");
                     tokenitem.nombre=lexer.lexeme;
                     tokenitem.tipo="NO RECONOCIDO";
                     tokenslist.add(tokenitem);
                 break;
                 case PUNTOYCOMA:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Fin de linea";
+                    tokenitem.tipo="Fin de línea";
                     tokenslist.add(tokenitem);
                     break;
                 case OPERADORLOGICO:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Operador logico";
+                    tokenitem.tipo="Operador lógico";
                     tokenslist.add(tokenitem);
                     break;
                 case INICIOPHP:
@@ -252,17 +385,17 @@ public class interfaz extends javax.swing.JFrame {
                 break;
                 case ASIGNACION:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Asignacion";
+                    tokenitem.tipo="Operador de asignación";
                     tokenslist.add(tokenitem);
                 break;
                 case COMPARACION:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Comparacion";
+                    tokenitem.tipo="Operador de comparación";
                     tokenslist.add(tokenitem);
                 break;
                 case DIFERENTE:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Diferente";
+                    tokenitem.tipo="Operador de diferencia";
                     tokenslist.add(tokenitem);
                 break;
                 case TEXTO:
@@ -277,23 +410,23 @@ public class interfaz extends javax.swing.JFrame {
                 break;
                 case ID: {
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="ID";
+                    tokenitem.tipo="Identificador";
                     tokenslist.add(tokenitem);
                     break;
                 }
                 case INT:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="INT";
+                    tokenitem.tipo="Entero";
                     tokenslist.add(tokenitem);
                     break;
                 case PAA:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Parentesis inicial";
+                    tokenitem.tipo="Paréntesis inicial";
                     tokenslist.add(tokenitem);
                 break;
                 case PAC:
                     tokenitem.nombre=lexer.lexeme;
-                    tokenitem.tipo="Parentesis final";
+                    tokenitem.tipo="Paréntesis final";
                     tokenslist.add(tokenitem);
                 break;
                 default:
@@ -317,8 +450,16 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private java.awt.Menu menu1;
+    private java.awt.Menu menu2;
+    private javax.swing.JMenuBar menuArchivo;
+    private java.awt.MenuBar menuBar1;
+    private javax.swing.JMenu menuSubir;
     private java.awt.TextArea textArea1;
     // End of variables declaration//GEN-END:variables
 
