@@ -273,12 +273,12 @@ public class interfaz extends javax.swing.JFrame {
                 listaErrores.add("<<<<<<<<<<<<<ERRORES>>>>>>>>>>>>>>>");
                 listaErrores.add("TOTAL: "+errores);
                 if (errores==0) {
-                    resultado = resultado+"SI ES VALIDO EN PHP!";
-                    listaErrores.add("SI ES VALIDO EN PHP!");
+                    resultado = resultado+"TODOS LOS TOKENS ENCONTRADOS EN ESTE ARCHIVO SON ACEPTADOS EN PHP!";
+                    listaErrores.add("TODOS LOS TOKENS ENCONTRADOS EN ESTE ARCHIVO SON ACEPTADOS EN PHP!");
                     newOut = nuevoString;
                 }else{
-                    resultado = resultado+"NO ES VALIDO EN PHP!";
-                    listaErrores.add("NO ES VALIDO EN PHP!");
+                    resultado = resultado+"NO TODOS LOS TOKENS ENCONTRADOS EN ESTE ARCHIVO SON ACEPTADOS EN PHP!";
+                    listaErrores.add("NO TODOS LOS TOKENS ENCONTRADOS EN ESTE ARCHIVO SON ACEPTADOS EN PHP!");
                     newOut = "";
                 }
                 textArea1.setText(resultado);
@@ -515,8 +515,8 @@ public class interfaz extends javax.swing.JFrame {
                     break;
                 case ERROR:
                     errores++;
-                    listaErrores.add("Error, símbolo "+lexer.lexeme+" no reconocido. "+"Línea: "+lexer.linea);
-                    resultado=resultado+ "Error, símbolo "+lexer.lexeme+" no reconocido. "+"Línea: "+lexer.linea+System.getProperty("line.separator");
+                    listaErrores.add("Error, símbolo "+lexer.lexeme+" no reconocido. "+"Línea: "+lexer.linea+1);
+                    resultado=resultado+ "Error, símbolo "+lexer.lexeme+" no reconocido. "+"Línea: "+(1+lexer.linea)+System.getProperty("line.separator");
                     tokenitem.nombre=lexer.lexeme;
                     tokenitem.tipo="NO RECONOCIDO";
                     tokenslist.add(tokenitem);

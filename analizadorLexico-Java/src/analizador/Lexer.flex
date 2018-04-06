@@ -45,7 +45,7 @@ variableError = "$" {D}({L}|{D}|"_")* | {D}({L}|{D}|"_")*
 
 //Comillas y textos
 comillas = [\"]
-especialChars = "*"|"-" | "/" | "_" | "." | "," | "~" | "!" | "@" | "#" | "$" | "%" | "'" | "^" | "&" | "|" | "(" | ")" |" {" | "}" | \"\" |"["|"]"|"<"|">"|"?"|"="|"+"|":"|";"|"'"
+especialChars = "*"|"-" | "/" | "_" | "." | "," | "~" | "!" | "@" | "#" | "$" | "%" | "'" | "^" | "&" | "|" | "(" | ")" |" {" | "}" | "\\" |"["|"]"|"<"|">"|"?"|"="|"+"|":"|";"|"'"
 texto = "'" ({Espacio}* {L}* {especialChars}* {D}*)* {Espacio}* "'" | {comillas} ({Espacio}* {L}* {especialChars}* {D}*)* {Espacio}* {comillas}
 comilla = '|`
 
@@ -66,6 +66,10 @@ public String lexeme;
 public int linea;
 %}
 %%
+
+/* TEXTOS, ESPACIOS EN LAS LINEAS */
+{texto} {lexeme=yytext(); return TEXTO;}
+{WHITE} {lexeme=yytext(); return ESPACIO;}
 
 {AnotherComment} {lexeme=yytext(); return COMMENT;}
 /*PALABRAS RESERVADAS, VARIABLES Y CONSTANTES, TIPOS DE DATO Y ACCESO A LA BASE DE DATOS */
@@ -120,10 +124,6 @@ public int linea;
 "int" {lexeme=yytext(); return ENT;}
 "float"|"double" {lexeme=yytext(); return REA;}
 
-/* TEXTOS, ESPACIOS EN LAS LINEAS */
-{texto} {lexeme=yytext(); return TEXTO;}
-{WHITE} {lexeme=yytext(); return ESPACIO;}
-
 /*OPERADORES ARITMETICOS Y LOGICOS*/
 {operadoresA} {lexeme=yytext(); return OPERADORARITMETICO;}
 {operadoresL} {lexeme=yytext(); return OPERADORLOGICO;}
@@ -141,4 +141,4 @@ public int linea;
 {Comment} {lexeme=yytext(); return COMMENT;}
 
 /*TOKEN NO RECONOCIDO*/
-. {lexeme=yytext();linea = yyline+1; return ERROR;}
+. {lexeme=yytext();linea = yyline; return ERROR;}
