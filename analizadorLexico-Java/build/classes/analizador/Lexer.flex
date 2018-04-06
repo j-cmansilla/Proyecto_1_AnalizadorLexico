@@ -14,6 +14,7 @@ TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}?
 DocumentationComment = "/**" {CommentContent} "*"+ "/"
 CommentContent       = ( [^*] | \*+ [^/*] )*
+AnotherComment = "#" ({Espacio}* {L}* {especialChars}* {D}*)*
 
 /* EXPRESIONES REGULARES */
 
@@ -46,7 +47,7 @@ variableError = "$" {D}({L}|{D}|"_")* | {D}({L}|{D}|"_")*
 comillas = [\"]
 especialChars = "*"|"-" | "/" | "_" | "." | "," | "~" | "!" | "@" | "#" | "$" | "%" | "'" | "^" | "&" | "|" | "(" | ")" |" {" | "}" | \"\" |"["|"]"|"<"|">"|"?"|"="|"+"|":"|";"|"'"
 texto = "'" ({Espacio}* {L}* {especialChars}* {D}*)* {Espacio}* "'" | {comillas} ({Espacio}* {L}* {especialChars}* {D}*)* {Espacio}* {comillas}
-comilla = '
+comilla = '|`
 
 //Tipo de dato lógicos
 tipoDeDatoL = "true"|"false"
@@ -66,7 +67,7 @@ public int linea;
 %}
 %%
 
-
+{AnotherComment} {lexeme=yytext(); return COMMENT;}
 /*PALABRAS RESERVADAS, VARIABLES Y CONSTANTES, TIPOS DE DATO Y ACCESO A LA BASE DE DATOS */
 {PalabraReservada} {lexeme=yytext(); return PALABRARESERVADA;}
 {real} {{lexeme=yytext(); return REAL;}}

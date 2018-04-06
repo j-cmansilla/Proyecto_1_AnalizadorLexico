@@ -269,9 +269,6 @@ public class interfaz extends javax.swing.JFrame {
             nuevoString = nuevoString + concatenado;
             TokenEvaluado tokenitem=new TokenEvaluado();
             if (token == null){
-                for(int i=0;i<tokenslist.size();i++){
-                    System.out.println(tokenslist.get(i).nombre + "=" + tokenslist.get(i).tipo);
-                }
                 resultado = resultado +"<<<<<<<<<<<<<ERRORES>>>>>>>>>>>>>>>"+System.getProperty("line.separator")+"TOTAL: "+errores+System.getProperty("line.separator");
                 listaErrores.add("<<<<<<<<<<<<<ERRORES>>>>>>>>>>>>>>>");
                 listaErrores.add("TOTAL: "+errores);

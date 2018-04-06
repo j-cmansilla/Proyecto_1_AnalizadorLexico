@@ -62,4 +62,5 @@ Expresiones regulares utilizadas en el proyecto
 70. CorcheteQueAbre = "[" 
 71. CorcheteQueCierra = "]" 
 72. DosPuntos = ":" 
+73. AnotherComment = "#" ({Espacio}* {L}* {especialChars}* {D}*)*
 
