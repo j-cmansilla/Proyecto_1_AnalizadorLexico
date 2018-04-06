@@ -6,6 +6,7 @@ import static analizador.Token.*;
 %ignorecase
 %type Token
 
+/*Comentarios*/
 LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]
 Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
@@ -13,44 +14,74 @@ TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}?
 DocumentationComment = "/**" {CommentContent} "*"+ "/"
 CommentContent       = ( [^*] | \*+ [^/*] )*
+
+/* EXPRESIONES REGULARES */
+
+//Palabras reservadas, variables y constantes predefinidas
 PalabraReservada = "callable"|"null"|"abstract"|"as"|"case"|"catch"|"class"|"clone"|"declare"|"default"|"die"|"echo"|"enddeclare"|"eval"|"exit"|"extends"|"final"|"finally"|"implements"|"global"|"goto"|"include_once"|"instanceof"|"insteadof"|"interface"|"isset"|"new"|"print"|"list"|"namespace"|"private"|"protected"|"public"|"require"|"require_once"|"static"|"throw"|"trait"|"try"|"unset"|"use"|"var"|"yield"
 constantesPredefinidas = "__LINE__"|"__FILE__"|"__DIR__"|"__FUNCTION__"|"__CLASS__"|"__TRAIT__"|"__METHOD__"|"__NAMESPACE__"
 variablesPredefinidas = "$GLOBALS"|"$_SERVER"|"$_GET"|"$_POST"|"$_FILES"|"$_REQUEST"|"$_SESSION"|"$_ENV"|"$_COOKIE"|"$php_errormsg"|"$HTTP_RAW_POST_DATA"|"$http_response_header"|"$argc"|"$argv"
+
+//Acceso a la base de datos
 argumentoBD = "[" "`" ({Espacio}* {L}* {D}*)* {Espacio}*  "`" "]"
 accesoBD = "$recordset"
+
+//Operadores lógicos y aritméticos
 operadoresA = "+"|"-"|"*"|"/"|"**"|"%"|"++"|"--"|"^"
 operadoresL = "and"|"or"|"xor"|"!"|"&&"|"||"|"not"|"|"|"&"
+
+//Identificadores
 identificador = ({L}|"_") ({L}|{D}|"_")*
+
+//Numeros reales
 real = "-"{D}{D}*"."{D}*|{D}{D}*"."{D}*
+
+//Definición de constantes
 constante = "define" | "const"
-/* "define" {Espacio}* "(" {texto} "," {texto} ")" | "const" {Espacio}* {identificador} | "define" {Espacio}* "(" {texto} "," {Espacio}* ({identificador}{Espacio}* "()") {Espacio}* ")"*/
+
+//Control de errores en variables
 variableError = "$" {D}({L}|{D}|"_")* | {D}({L}|{D}|"_")*
+
+//Comillas y textos
 comillas = [\"]
 especialChars = "*"|"-" | "/" | "_" | "." | "," | "~" | "!" | "@" | "#" | "$" | "%" | "'" | "^" | "&" | "|" | "(" | ")" |" {" | "}" | \"\" |"["|"]"|"<"|">"|"?"|"="|"+"|":"|";"|"'"
 texto = "'" ({Espacio}* {L}* {especialChars}* {D}*)* {Espacio}* "'" | {comillas} ({Espacio}* {L}* {especialChars}* {D}*)* {Espacio}* {comillas}
-tipoDeDatoL = "true"|"false"
-Espacio = [ ]
 comilla = '
+
+//Tipo de dato lógicos
+tipoDeDatoL = "true"|"false"
+
+//Espacios en blanco, tabulaciones y saltos de línea
+Espacio = [ ]
 WHITE=[ \t\r\n]
+
+//Letras y números
 L = [a-zA-Z_]
 D = [0-9]
+
 %{
+//Variables globales para ser accedidas después
 public String lexeme;
 public int linea;
 %}
 %%
 
-"\\" {lexeme=yytext(); return SLASH;}
+
+/*PALABRAS RESERVADAS, VARIABLES Y CONSTANTES, TIPOS DE DATO Y ACCESO A LA BASE DE DATOS */
 {PalabraReservada} {lexeme=yytext(); return PALABRARESERVADA;}
 {real} {{lexeme=yytext(); return REAL;}}
 ("(-"{D}+")")|{D}+ {lexeme=yytext(); return INT;}
 {accesoBD} {lexeme=yytext(); return ACCDB;}
 {constantesPredefinidas} {lexeme=yytext(); return CONSTP;}
 {constante} {lexeme=yytext(); return CONSTANTE;}
-{variableError} {lexeme=yytext(); linea = yyline; return ERROR;}
 {variablesPredefinidas} {lexeme=yytext(); return VARPRE;}
 {argumentoBD} {lexeme=yytext(); return ARGBD;}
+
+//Error en las variables
+{variableError} {lexeme=yytext(); linea = yyline; return ERROR;}
+
 /*SIMBOLOS*/
+"\\" {lexeme=yytext(); return SLASH;}
 "$" {lexeme=yytext(); return VARIABLE;}
 "if" {lexeme=yytext(); return SI;}
 "(" {lexeme=yytext(); return PAA;}
@@ -84,16 +115,29 @@ public int linea;
 "[" {lexeme=yytext(); return PAI;}
 "]" {lexeme=yytext(); return PAF;}
 ":" {lexeme=yytext(); return DOSPUNTOS;}
-{texto} {lexeme=yytext(); return TEXTO;}
-{WHITE} {lexeme=yytext(); return ESPACIO;}
-{operadoresA} {lexeme=yytext(); return OPERADORARITMETICO;}
-{operadoresL} {lexeme=yytext(); return OPERADORLOGICO;}
 "string" {lexeme=yytext(); return CADENA;}
-{comilla} {lexeme=yytext(); return COMILLA;}
-{comillas} {lexeme=yytext(); return COMILLA;}
 "int" {lexeme=yytext(); return ENT;}
 "float"|"double" {lexeme=yytext(); return REA;}
+
+/* TEXTOS, ESPACIOS EN LAS LINEAS */
+{texto} {lexeme=yytext(); return TEXTO;}
+{WHITE} {lexeme=yytext(); return ESPACIO;}
+
+/*OPERADORES ARITMETICOS Y LOGICOS*/
+{operadoresA} {lexeme=yytext(); return OPERADORARITMETICO;}
+{operadoresL} {lexeme=yytext(); return OPERADORLOGICO;}
+/*COMILLAS*/
+{comilla} {lexeme=yytext(); return COMILLA;}
+{comillas} {lexeme=yytext(); return COMILLA;}
+
+/*TIPOS DE DATO LOGICOS*/
 {tipoDeDatoL} {lexeme=yytext(); return TIPODEDATOL;}
+
+/*IDENTIFICADOR*/
 {identificador} {lexeme=yytext(); return ID;}
-{Comment} {lexeme=yytext(); return COMMENT;} 
+
+/*COMENTARIOS*/
+{Comment} {lexeme=yytext(); return COMMENT;}
+
+/*TOKEN NO RECONOCIDO*/
 . {lexeme=yytext();linea = yyline+1; return ERROR;}
