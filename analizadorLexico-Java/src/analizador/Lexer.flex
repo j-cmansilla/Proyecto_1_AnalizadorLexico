@@ -9,6 +9,7 @@ import static analizador.Token.*;
 /*Comentarios*/
 LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]
+ErrorComment = "/*" {WHITE}* ({L}*{D}*)* {WHITE}*
 Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}?
@@ -21,11 +22,11 @@ AnotherComment = "#" ({Espacio}* {L}* {especialChars}* {D}*)*
 //Palabras reservadas, variables y constantes predefinidas
 PalabraReservada = "empty"|"callable"|"null"|"abstract"|"as"|"case"|"catch"|"class"|"clone"|"declare"|"default"|"die"|"echo"|"enddeclare"|"eval"|"exit"|"extends"|"final"|"finally"|"implements"|"global"|"goto"|"include_once"|"instanceof"|"insteadof"|"interface"|"isset"|"new"|"print"|"list"|"namespace"|"private"|"protected"|"public"|"require"|"require_once"|"static"|"throw"|"trait"|"try"|"unset"|"use"|"var"|"yield"
 constantesPredefinidas = "__LINE__"|"__FILE__"|"__DIR__"|"__FUNCTION__"|"__CLASS__"|"__TRAIT__"|"__METHOD__"|"__NAMESPACE__"
-variablesPredefinidas = "$GLOBALS"|"$_SERVER"|"$_GET"|"$_POST"|"$_FILES"|"$_REQUEST"|"$_SESSION"|"$_ENV"|"$_COOKIE"|"$php_errormsg"|"$HTTP_RAW_POST_DATA"|"$http_response_header"|"$argc"|"$argv"
+variablesPredefinidas = "$GLOBALS"|"$_SERVER"|"$_GET"|"$_FILES"|"$_REQUEST"|"$_SESSION"|"$_ENV"|"$_COOKIE"|"$php_errormsg"|"$HTTP_RAW_POST_DATA"|"$http_response_header"|"$argc"|"$argv"
 
 //Acceso a la base de datos
-argumentoBD = "[" "`" {Espacio}* {identificador} {Espacio}*  "`" "]"
-ErrArgumentoBD = "[" "`" ({Espacio}* {L}* {especialChars}* {D}*)*  "`" "]"
+argumentoBD = "[" "'" {Espacio}* {identificador} {Espacio}*  "'" "]"
+ErrArgumentoBD = "[" "'" ({Espacio}* {L}* {especialChars}* {D}*)*  "'" "]"
 accesoBD = "$recordset"
 
 //Operadores lógicos y aritméticos
@@ -33,7 +34,7 @@ operadoresA = "+"|"-"|"*"|"/"|"**"|"%"|"++"|"--"|"^"
 operadoresL = "and"|"or"|"xor"|"!"|"&&"|"||"|"not"|"|"|"&"
 
 //Identificadores
-identificador = ({L}|"_") ({L}|{D}|"_")*
+identificador = ({L}|_) ({L}|{D}|_)* | "\$"({L}|_)({L}|{D}|_)*
 
 //Numeros reales
 real = "-"{D}{D}*"."{D}*|{D}{D}*"."{D}*
@@ -79,17 +80,17 @@ public int linea;
 {argumentoBD} {lexeme=yytext(); return ARGBD;}
 {ErrArgumentoBD} {lexeme=yytext(); return ERROR;}
 {AnotherComment} {lexeme=yytext(); return COMMENT;}
-
+{ErrorComment} {lexeme=yytext(); return ERROR;}
 /* TEXTOS, ESPACIOS EN LAS LINEAS */
 {texto} {lexeme=yytext(); return TEXTO;}
 {WHITE} {lexeme=yytext(); return ESPACIO;}
-
+"9pt" {lexeme=yytext(); return ESPACIO;}
 //Error en las variables
 {variableError} {lexeme=yytext(); linea = yyline; return ERROR;}
 
 /*SIMBOLOS*/
+"=!=" {lexeme=yytext(); return ERROR;}
 "\\" {lexeme=yytext(); return SLASH;}
-"$" {lexeme=yytext(); return VARIABLE;}
 "if" {lexeme=yytext(); return SI;}
 "(" {lexeme=yytext(); return PAA;}
 "@" {lexeme=yytext(); return ARR;}
@@ -122,6 +123,7 @@ public int linea;
 "[" {lexeme=yytext(); return PAI;}
 "]" {lexeme=yytext(); return PAF;}
 ":" {lexeme=yytext(); return DOSPUNTOS;}
+
 "string" {lexeme=yytext(); return CADENA;}
 "int" {lexeme=yytext(); return ENT;}
 "float"|"double" {lexeme=yytext(); return REA;}
@@ -138,7 +140,7 @@ public int linea;
 
 /*IDENTIFICADOR*/
 {identificador} {lexeme=yytext(); return ID;}
-
+"\$" {lexeme=yytext(); return ERROR;}
 /*COMENTARIOS*/
 {Comment} {lexeme=yytext(); return COMMENT;}
 
