@@ -25,7 +25,7 @@ más de 0, se escribe el archivo de errores con todos los que se encontraron y u
 6. Click en el botón de analizar 
 7. Al finalizar ir a la ruta: C:\MINIPHP en donde encontrara los archivos de salida
 
-### Prerequisitos
+## Prerequisitos
 
 Tener instalado Java SE 8 (preferiblemente) y JDK 8(preferiblemente) en caso de que no se tenga la librería de JFlex, solo 
 descargarla de la página oficial y agregarla al proyecto. 
