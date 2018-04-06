@@ -19,12 +19,13 @@ AnotherComment = "#" ({Espacio}* {L}* {especialChars}* {D}*)*
 /* EXPRESIONES REGULARES */
 
 //Palabras reservadas, variables y constantes predefinidas
-PalabraReservada = "callable"|"null"|"abstract"|"as"|"case"|"catch"|"class"|"clone"|"declare"|"default"|"die"|"echo"|"enddeclare"|"eval"|"exit"|"extends"|"final"|"finally"|"implements"|"global"|"goto"|"include_once"|"instanceof"|"insteadof"|"interface"|"isset"|"new"|"print"|"list"|"namespace"|"private"|"protected"|"public"|"require"|"require_once"|"static"|"throw"|"trait"|"try"|"unset"|"use"|"var"|"yield"
+PalabraReservada = "empty"|"callable"|"null"|"abstract"|"as"|"case"|"catch"|"class"|"clone"|"declare"|"default"|"die"|"echo"|"enddeclare"|"eval"|"exit"|"extends"|"final"|"finally"|"implements"|"global"|"goto"|"include_once"|"instanceof"|"insteadof"|"interface"|"isset"|"new"|"print"|"list"|"namespace"|"private"|"protected"|"public"|"require"|"require_once"|"static"|"throw"|"trait"|"try"|"unset"|"use"|"var"|"yield"
 constantesPredefinidas = "__LINE__"|"__FILE__"|"__DIR__"|"__FUNCTION__"|"__CLASS__"|"__TRAIT__"|"__METHOD__"|"__NAMESPACE__"
 variablesPredefinidas = "$GLOBALS"|"$_SERVER"|"$_GET"|"$_POST"|"$_FILES"|"$_REQUEST"|"$_SESSION"|"$_ENV"|"$_COOKIE"|"$php_errormsg"|"$HTTP_RAW_POST_DATA"|"$http_response_header"|"$argc"|"$argv"
 
 //Acceso a la base de datos
-argumentoBD = "[" "`" ({Espacio}* {L}* {D}*)* {Espacio}*  "`" "]"
+argumentoBD = "[" "`" {Espacio}* {identificador} {Espacio}*  "`" "]"
+ErrArgumentoBD = "[" "`" ({Espacio}* {L}* {especialChars}* {D}*)*  "`" "]"
 accesoBD = "$recordset"
 
 //Operadores lógicos y aritméticos
@@ -67,11 +68,6 @@ public int linea;
 %}
 %%
 
-/* TEXTOS, ESPACIOS EN LAS LINEAS */
-{texto} {lexeme=yytext(); return TEXTO;}
-{WHITE} {lexeme=yytext(); return ESPACIO;}
-
-{AnotherComment} {lexeme=yytext(); return COMMENT;}
 /*PALABRAS RESERVADAS, VARIABLES Y CONSTANTES, TIPOS DE DATO Y ACCESO A LA BASE DE DATOS */
 {PalabraReservada} {lexeme=yytext(); return PALABRARESERVADA;}
 {real} {{lexeme=yytext(); return REAL;}}
@@ -81,6 +77,12 @@ public int linea;
 {constante} {lexeme=yytext(); return CONSTANTE;}
 {variablesPredefinidas} {lexeme=yytext(); return VARPRE;}
 {argumentoBD} {lexeme=yytext(); return ARGBD;}
+{ErrArgumentoBD} {lexeme=yytext(); return ERROR;}
+{AnotherComment} {lexeme=yytext(); return COMMENT;}
+
+/* TEXTOS, ESPACIOS EN LAS LINEAS */
+{texto} {lexeme=yytext(); return TEXTO;}
+{WHITE} {lexeme=yytext(); return ESPACIO;}
 
 //Error en las variables
 {variableError} {lexeme=yytext(); linea = yyline; return ERROR;}

@@ -273,11 +273,11 @@ public class interfaz extends javax.swing.JFrame {
                 listaErrores.add("<<<<<<<<<<<<<ERRORES>>>>>>>>>>>>>>>");
                 listaErrores.add("TOTAL: "+errores);
                 if (errores==0) {
-                    resultado = resultado+"TODOS LOS TOKENS ENCONTRADOS EN ESTE ARCHIVO SON ACEPTADOS EN PHP!";
+                    resultado = resultado+"TODOS LOS TOKENS ENCONTRADOS EN ESTE"+System.getProperty("line.separator")+"ARCHIVO SON ACEPTADOS EN PHP!";
                     listaErrores.add("TODOS LOS TOKENS ENCONTRADOS EN ESTE ARCHIVO SON ACEPTADOS EN PHP!");
                     newOut = nuevoString;
                 }else{
-                    resultado = resultado+"NO TODOS LOS TOKENS ENCONTRADOS EN ESTE ARCHIVO SON ACEPTADOS EN PHP!";
+                    resultado = resultado+"NO TODOS LOS TOKENS ENCONTRADOS EN ESTE"+System.getProperty("line.separator")+"ARCHIVO SON ACEPTADOS EN PHP!";
                     listaErrores.add("NO TODOS LOS TOKENS ENCONTRADOS EN ESTE ARCHIVO SON ACEPTADOS EN PHP!");
                     newOut = "";
                 }
@@ -376,9 +376,9 @@ public class interfaz extends javax.swing.JFrame {
                     tokenslist.add(tokenitem);
                 break;
                 case CONSTANTE:
-                    concatenado = lexer.lexeme;
                     tokenitem.nombre=lexer.lexeme;
                     tokenitem.tipo="Definición de una constante";
+                    concatenado = lexer.lexeme.toLowerCase();
                     tokenslist.add(tokenitem);
                 break;
                 case ACCDB:
